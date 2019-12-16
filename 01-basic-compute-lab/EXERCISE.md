@@ -13,6 +13,6 @@ Below are the requirements for Exercise 1:
 
 I've used a Makefile to deploy this solution. To execute, perform the following:
 
-```
+```console
 make
 ```
