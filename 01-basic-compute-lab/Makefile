@@ -41,7 +41,7 @@ release:
 	gsutil ls $(BUCKET)
 	# chmod Upload worker script file so that it is executable
 	chmod +x worker-startup-script.sh
-	# Create instance, using the `worker-startup-script.sh` as a startup script.
+	# Create instance, using the `worker-startup-script.sh` as a startup script
 	gcloud compute --project=$(PROJECT_ID) \
 	instances create $(INSTANCE_NAME) --description="GCE Lab Challenge 1" --zone=$(DEFAULT_ZONE) \
 	--machine-type=f1-micro --image=debian-9-stretch-v20191121 --image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard \
