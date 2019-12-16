@@ -1,4 +1,4 @@
-# Google - Associate Cloud Engineer Certification - Labs and Exercise
+# Google - Associate Cloud Engineer Certification - Labs and Exercises
 
 This repository contains a collection of labs and exercises for the Associate Cloud Engineer certification.
 
