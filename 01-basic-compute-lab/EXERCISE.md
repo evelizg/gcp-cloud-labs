@@ -28,6 +28,9 @@ Edit the `Makefile` with the appropriate variables for your environment. Most no
 gcloud alpha billing accounts list
 ```
 
+The Makefile has been commented as much as possible, you can interpret what is being executed and why.
+
+
 ### 1) `make project-baseline` - Create project baseline
 
 This command will perform all the baseline tasks required prior to creating and validating the compute instance.
@@ -52,7 +55,7 @@ This command will deploy the compute instance inside an existing project and cop
 At a high level, these tasks are:
 
 - Deploy the compute instance with the startup script `worker-startup-script.sh` - `deploy-compute`
-- Wait 300 seconds for the `worker-startup-script.sh` to execute, then read the output file which should have been copied as a result of the startup script successfully executing
+- Wait 300 seconds for the `worker-startup-script.sh` to execute, then read the output file which should have been copied as a result of the startup script successfully executing - `validate-compute`
 
 To execute, perform the following:
 
@@ -72,7 +75,11 @@ make
 
 ### 4) `make remove` - Delete project, without user prompt
 
-This command will delete the project, without prompting the user to confirm the deletion. Take care in using the command
+This command will delete the project, without prompting the user to confirm the deletion. **Take care in using the command.**
+At a high level, these tasks are:
+
+- Unset the project so that the ensuing commands run successfully - `unset-project`
+- Delete the project and disable the user prompt - `delete-project`
 
 To execute, perform the following:
 
