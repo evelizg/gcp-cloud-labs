@@ -1,21 +1,22 @@
 # Populate with your variables
-PROJECT_ID := gcp-lab-challenge-3255
+PROJECT_ID := gcp-lab-challenge-54321
 # To retrieve your billing account id, run the command `gcloud alpha billing accounts list` from cloud shell
-ACCOUNT_ID := 12345-654321-ABCDEF
+ACCOUNT_ID := XXXXXX-XXXXXX-XXXXXX
 DEFAULT_REGION := us-west
 DEFAULT_ZONE := us-west1-b
-BUCKET = gs://gcp-challenge-lab-1-logging-2233/
+BUCKET = gs://gcp-challenge-lab-1-logging-54321/
 INSTANCE_NAME = lab-vm-2
 LAB_LABELS = gcp-compute-lab-1
 
 .PHONY: all
 
-all: create-project set-project link-billing enable-compute create-bucket prepare-script deploy-compute validate-compute
+all: project-baseline compute
 
 project-baseline: create-project set-project link-billing enable-compute create-bucket prepare-script
 
 compute: set-project deploy-compute validate-compute
 
+remove: unset-project delete-project
 
 create-project:
 	# Create new project
@@ -74,3 +75,11 @@ validate-compute:
 	sleep 300
 	# Check that stress test results are in bucket
 	gsutil cat $(BUCKET)machine-$(INSTANCE_NAME)-finished.txt
+
+unset-project:
+    # Unset project for current session
+	gcloud config unset project
+
+delete-project:
+	# Delete project and WITHOUT prompting the user to confirm
+	gcloud projects delete $(PROJECT_ID) --quiet
