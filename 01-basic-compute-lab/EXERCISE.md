@@ -40,7 +40,7 @@ At a high level, these tasks are:
 - Set the project so that the ensuing commands run from the project context - `set-project`
 - Link the billing account to the project - `link-billing`
 - Enable the compute service, so that compute instances can be created - `enable-compute`
-- Create a bucket to store the diagnostic logs in
+- Create a bucket to store the diagnostic logs in - `create-bucket`
 - Change the permissions on the startup script, so that it is executable - `prepare-script`
 
 To execute, perform the following:
@@ -54,8 +54,8 @@ make project-baseline
 This command will deploy the compute instance inside an existing project and copy the stress test log to an existing bucket:
 At a high level, these tasks are:
 
-- Deploy the compute instance with the startup script `worker-startup-script.sh` - `deploy-compute`
-- Wait 300 seconds for the `worker-startup-script.sh` to execute, then read the output file which should have been copied as a result of the startup script successfully executing - `validate-compute`
+- Deploy the compute instance with the startup script `worker-startup-script.sh` and pass the bucket as metadata to the instance - `deploy-compute`
+- Wait 300 seconds for the `worker-startup-script.sh` to execute, then read the output file from the bucket which should have been copied as a result of the startup script successfully executing - `validate-compute`
 
 To execute, perform the following:
 
