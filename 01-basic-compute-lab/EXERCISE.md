@@ -28,12 +28,12 @@ Edit the `Makefile` with the appropriate variables for your environment. Most no
 gcloud alpha billing accounts list
 ```
 
-The Makefile has been commented as much as possible, you can interpret what is being executed and why.
+The Makefile has been commented as much as possible, so that you can interpret what is being executed and why.
 
 
 ### 1) `make project-baseline` - Create project baseline
 
-This command will perform all the baseline tasks required prior to creating and validating the compute instance.
+This command will perform all the baseline tasks required prior to creating and validating the compute instance.  
 At a high level, these tasks are:
 
 - Create the project - `create-project`
@@ -51,7 +51,7 @@ make project-baseline
 
 ### 2) `make compute` - Deploy a compute instance inside an existing baseline project
 
-This command will deploy the compute instance inside an existing project and copy the stress test log to an existing bucket:
+This command will deploy the compute instance inside an existing project and copy the stress test log to an existing bucket.  
 At a high level, these tasks are:
 
 - Deploy the compute instance with the startup script `worker-startup-script.sh` and pass the bucket as metadata to the instance - `deploy-compute`
@@ -65,8 +65,7 @@ make compute
 
 ### 3) `make` - Create project baseline and deploy compute
 
-This command is the combination of the targets `project-baseline` and `compute` in that order so that the deployment is successful.
-
+This command is the combination of the targets `project-baseline` and `compute` in that order so that the deployment is successful.  
 To execute, perform the following:
 
 ```console
@@ -75,7 +74,8 @@ make
 
 ### 4) `make remove` - Delete project, without user prompt
 
-This command will delete the project, without prompting the user to confirm the deletion. **Take care in using the command.**
+This command will delete the project, without prompting the user to confirm the deletion.  
+**Take care in using the command.**  
 At a high level, these tasks are:
 
 - Unset the project so that the ensuing commands run successfully - `unset-project`
