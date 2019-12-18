@@ -9,3 +9,8 @@ Below is a list of exercises:
 ### Lab 1 - Basic Compute Lab
 
 [Create a new project, containing an instance with a startup script](https://github.com/writememe/gcp-cloud-labs/blob/master/01-basic-compute-lab/EXERCISE.md)
+
+
+### Lab 2 - Custom VPC Labs
+
+[Create a custom VPC and restrict traffic flows](https://github.com/writememe/gcp-cloud-labs/blob/master/02-custom-vpc-lab/EXERCISE.md)
