@@ -1,7 +1,7 @@
 # Populate with your variables
-PROJECT_ID := gcp-challenge-2-net
+PROJECT_ID := gcp-challenge-3-net
 # To retrieve your billing account id, run the command `gcloud alpha billing accounts list` from cloud shell
-ACCOUNT_ID := 0175C8-6FE4A3-D0CC88
+ACCOUNT_ID := XXXXX-XXXXX-XXXXXX
 DEFAULT_REGION := us-west1
 DEFAULT_ZONE := us-west1-b
 CUSTOM_VPC_NAME := custom-vpc-lab-cc1
@@ -116,7 +116,7 @@ create-fe-it:
 	--network-tier=PREMIUM --maintenance-policy=MIGRATE --service-account=$(FRONTEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com \
 	--scopes=https://www.googleapis.com/auth/cloud-platform --region=$(DEFAULT_REGION) --image=debian-9-stretch-v20191210 \
 	--image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=$(FRONTEND_IT) --reservation-affinity=any \
-	-- tags=open-ssh-tag
+	-- tags=$(NETWORK_TAG)
 
 create-fe-ig:
 	# Create frontend instance group
