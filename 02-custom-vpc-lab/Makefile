@@ -1,5 +1,5 @@
 # Populate with your variables
-PROJECT_ID := gcp-challenge-3-net
+PROJECT_ID := gcp-challenge-2-net
 # To retrieve your billing account id, run the command `gcloud alpha billing accounts list` from cloud shell
 ACCOUNT_ID := XXXXX-XXXXX-XXXXXX
 DEFAULT_REGION := us-west1
@@ -157,15 +157,35 @@ stop-be-ig:
 	gcloud compute instance-groups managed stop-autoscaling $(BACKEND_IG) --region=$(DEFAULT_REGION)
 
 create-fw-rule:
-	# Create firewall rules for incoming egress service account
-	gcloud compute --project=$(PROJECT_ID) firewall-rules create allow-incoming-to-frontend-fwr \
-	--direction=INGRESS --priority=1000 --network=$(CUSTOM_VPC_NAME) --action=ALLOW --rules=icmp --source-ranges=0.0.0.0/0 \
-	--target-service-accounts=$(FRONTEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com
 	# Firewall rules for inbound SSH on network tags
 	gcloud compute --project=$(PROJECT_ID) firewall-rules create open-ssh-by-tag-fwr \
-	--direction=INGRESS --priority=1010 --network=$(CUSTOM_VPC_NAME) --action=ALLOW --rules=tcp:22 \
+	--direction=INGRESS --priority=400 --network=$(CUSTOM_VPC_NAME) --action=ALLOW --rules=tcp:22 \
 	--source-ranges=0.0.0.0/0 --target-tags=$(NETWORK_TAG)
-	
+	# Create firewall rules for incoming frontend to backend
+	gcloud compute --project=$(PROJECT_ID) firewall-rules create allow-frontend-to-backend-fwr --description="Frontend service accounts to backend service accounts" \
+	--direction=INGRESS --priority=700 --network=$(CUSTOM_VPC_NAME) --action=ALLOW --rules=icmp --source-service-accounts=$(FRONTEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com \
+	--target-service-accounts=$(BACKEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com
+	 # Create firewall rules for incoming backend to backend
+	gcloud compute --project=$(PROJECT_ID) firewall-rules create allow-backend-to-backend-fwr --description="Backend service accounts to backend service accounts" \
+	--direction=INGRESS --priority=800 --network=$(CUSTOM_VPC_NAME) --action=ALLOW --rules=icmp --source-service-accounts=$(BACKEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com \
+	--target-service-accounts=$(BACKEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com
+	# Create firewall rule to block all connections from backend
+	gcloud compute --project=$(PROJECT_ID) firewall-rules create block-all-connections-from-backend-fwr --description=block-all-connections-from-backend-fwr \
+	--direction=INGRESS --priority=1000 --network=$(CUSTOM_VPC_NAME) --action=DENY --rules=all \
+	--source-service-accounts=$(BACKEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com
+	# Create firewall rules for incoming service account from Cloud Shell
+	gcloud compute --project=$(PROJECT_ID) firewall-rules create allow-icmp-incoming-to-frontend-fwr \
+	--direction=INGRESS --priority=1200 --network=$(CUSTOM_VPC_NAME) --action=ALLOW --rules=icmp --source-ranges=0.0.0.0/0 \
+	--target-service-accounts=$(FRONTEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com
+	# Egress rule to block all outbound traffic
+	gcloud compute --project=$(PROJECT_ID) firewall-rules create no-backend-egress-fwr --description="Block all backend egress traffic." \
+	--direction=EGRESS --priority=2000 --network=$(CUSTOM_VPC_NAME) --action=DENY --rules=all --destination-ranges=0.0.0.0/0 \
+	--target-service-accounts=$(BACKEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com
+	# Egress rule to allow backend to backend
+	gcloud compute --project=$(PROJECT_ID) firewall-rules create allow-backend-egress-to-vpc-fwr --description="Allow all backend to backend egress traffic." \
+	--direction=EGRESS --priority=1000 --network=$(CUSTOM_VPC_NAME) --action=ALLOW --rules=icmp --destination-ranges=192.168.0.0/18 \
+	--target-service-accounts=$(BACKEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com
+
 unset-project:
 	# Unset project for current session
 	gcloud config unset project
