@@ -34,3 +34,35 @@ Below is the desired result setup for Exercise 2:
 
 1) Clean up after yourself
 	- Disable autoscaling and set "Number of instances" to zero.
+
+## Solution 
+
+I've used a Makefile to deploy this solution. 
+
+TODO: Document below:
+
+all: baseline networking accounts compute-create security
+
+baseline: create-project set-project link-billing enable-compute 
+
+networking: baseline create-vpc
+
+accounts: create-role create-fe-sa bind-fe-sa create-be-sa bind-be-sa
+
+compute-create: create-fe-it create-fe-ig set-fe-ig create-be-it create-be-ig set-be-ig
+
+compute-stop: stop-fe-ig stop-be-ig
+
+security: create-fw-rules
+
+delete: unset-project delete-project
+
+### Pre-requisites
+
+Edit the `Makefile` with the appropriate variables for your environment. Most notably, you will need to retrieve your billing id by running the following command from inside the gcloud shell:
+
+```gcloud
+gcloud alpha billing accounts list
+```
+
+The Makefile has been commented as much as possible, so that you can interpret what is being executed and why.
