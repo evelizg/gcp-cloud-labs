@@ -1,10 +1,10 @@
 # Populate with your variables
-PROJECT_ID := gcp-challenge-net-lab-22
+PROJECT_ID := gcp-challenge-net-lab-20
 # To retrieve your billing account id, run the command `gcloud alpha billing accounts list` from cloud shell
-ACCOUNT_ID := 0175C8-6FE4A3-D0CC88
+ACCOUNT_ID := XXXXXX-XXXXXX-XXXXXX
 DEFAULT_REGION := us-west1
 DEFAULT_ZONE := us-west1-b
-CUSTOM_VPC_NAME := custom-vpc-lab-cc1
+CUSTOM_VPC_NAME := custom-vpc-lab-2
 FRONTEND_NAME:= frontend-subnet-1
 FRONTEND_SUBNET := 192.168.16.0/24
 BACKEND_NAME:= backend-subnet-1
@@ -124,7 +124,7 @@ create-fe-it:
 	--network-tier=PREMIUM --maintenance-policy=MIGRATE --service-account=$(FRONTEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com \
 	--scopes=https://www.googleapis.com/auth/cloud-platform --region=$(DEFAULT_REGION) --image=debian-9-stretch-v20191210 \
 	--image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=$(FRONTEND_IT) --reservation-affinity=any \
-	-- tags=$(NETWORK_TAG)
+	--tags=$(NETWORK_TAG)
 
 create-fe-ig:
 	# Create frontend instance group
@@ -147,7 +147,8 @@ create-be-it:
 	create $(BACKEND_IT) --machine-type=f1-micro --subnet=projects/$(PROJECT_ID)/regions/$(DEFAULT_REGION)/subnetworks/$(BACKEND_NAME) \
 	--network-tier=PREMIUM --maintenance-policy=MIGRATE --service-account=$(BACKEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com \
 	--scopes=https://www.googleapis.com/auth/cloud-platform --region=$(DEFAULT_REGION) --image=debian-9-stretch-v20191210 \
-	--image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=$(BACKEND_IT) --reservation-affinity=any
+	--image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=$(BACKEND_IT) --reservation-affinity=any \
+	--tags=$(NETWORK_TAG)
 
 create-be-ig:
 	# Create backend instance group
