@@ -39,23 +39,16 @@ Below is the desired result setup for Exercise 2:
 
 I've used a Makefile to deploy this solution. 
 
-TODO: Document below:
+This Makefile has eight operations:
 
-all: baseline networking accounts compute-create security
-
-baseline: create-project set-project link-billing enable-compute 
-
-networking: baseline create-vpc
-
-accounts: create-role create-fe-sa bind-fe-sa create-be-sa bind-be-sa
-
-compute-create: create-fe-it create-fe-ig set-fe-ig create-be-it create-be-ig set-be-ig
-
-compute-stop: stop-fe-ig stop-be-ig
-
-security: create-fw-rules
-
-delete: unset-project delete-project
+1) `make baseline` - Create project baseline
+2) `make networking` - Create the VPC for the project
+3) `make accounts` - Create the IAM role and service account(s) and bind them.
+4) `make compute-create` - Create the instance template(s), instance group(s) and define the autoscaling.
+5) `make compute-stop` - Turn off the autoscaling on existing instance group(s)
+6) `make security` - Create the firewalls needed for the solution.
+7) `make all` - Create the entire solution, incorporating items 1 to 6 above.
+8) `make delete` - Delete the entire project without prompting the user to confirm.
 
 ### Pre-requisites
 
