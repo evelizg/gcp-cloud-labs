@@ -1,19 +1,19 @@
 # Populate with your variables
 PROJECT_ID := gcp-challenge-2-net
 # To retrieve your billing account id, run the command `gcloud alpha billing accounts list` from cloud shell
-ACCOUNT_ID := XXXXX-XXXXX-XXXXXX
+ACCOUNT_ID := 0175C8-6FE4A3-D0CC88
 DEFAULT_REGION := us-west1
 DEFAULT_ZONE := us-west1-b
 CUSTOM_VPC_NAME := custom-vpc-lab-cc1
-FRONTEND_NAME:= frontend-d1-subnet
+FRONTEND_NAME:= frontend-subnet-1
 FRONTEND_SUBNET := 192.168.16.0/24
-BACKEND_NAME:= backend-d1-subnet
+BACKEND_NAME:= backend-subnet-1
 BACKEND_SUBNET := 192.168.32.0/24
 LAB_LABELS = gcp-custom-vpc
-IAM_ROLE_NAME = dt_custom_role_121
-IAM_ROLE_TITLE = dtCustomRole121
-FRONTEND_SA = frontend-sa-dt-121
-BACKEND_SA = backend-sa-dt-121
+IAM_ROLE_NAME = dt_custom_role_lab2
+IAM_ROLE_TITLE = dtCustomRoleLab2
+FRONTEND_SA = frontend-sa-dt-1
+BACKEND_SA = backend-sa-dt-1
 FRONTEND_IT = frontend-lab-it
 FRONTEND_IG = frontend-lab-ig
 BACKEND_IT = backend-lab-it
@@ -22,13 +22,21 @@ NETWORK_TAG = open-ssh-tag
 
 .PHONY: all
 
-all: create-vpc
+all: baseline networking accounts compute-create security
 
 baseline: create-project set-project link-billing enable-compute 
 
 networking: baseline create-vpc
 
 accounts: create-role create-fe-sa bind-fe-sa create-be-sa bind-be-sa
+
+compute-create: create-fe-it create-fe-ig set-fe-ig create-be-it create-be-ig set-be-ig
+
+compute-stop: stop-fe-ig stop-be-ig
+
+security: create-fw-rules
+
+delete: unset-project delete-project
 
 create-project:
 	# Create new project
@@ -63,7 +71,7 @@ create-vpc:
 	# Create custom VPC
 	gcloud compute --project=$(PROJECT_ID) networks create $(CUSTOM_VPC_NAME) \
 	 --description="$(CUSTOM_VPC_NAME) for custom VPC lab" --subnet-mode=custom
-	# Create backend subnet and associate to custom VPC
+	# Create frontend subnet and associate to custom VPC
 	gcloud compute --project=$(PROJECT_ID) networks subnets create $(FRONTEND_NAME) \
 	 --network=$(CUSTOM_VPC_NAME) --region=$(DEFAULT_REGION) --range=$(FRONTEND_SUBNET)
 	# Create backend subnet and associate to custom VPC
@@ -73,7 +81,7 @@ create-vpc:
 create-role:
 	# Create IAM role
 	gcloud iam roles create $(IAM_ROLE_NAME) --project $(PROJECT_ID) \
-	--description "Custom role description" --title $(IAM_ROLE_TITLE) \
+	--description "Custom IAM role for GCP Lab 2" --title $(IAM_ROLE_TITLE) \
 	--permissions logging.logEntries.create,monitoring.metricDescriptors.create,monitoring.metricDescriptors.get,monitoring.metricDescriptors.list,monitoring.monitoredResourceDescriptors.get,monitoring.monitoredResourceDescriptors.list,monitoring.timeSeries.create \
 	--stage GA
 	# List IAM role
@@ -156,7 +164,7 @@ stop-be-ig:
 	# Stop frontend instance group
 	gcloud compute instance-groups managed stop-autoscaling $(BACKEND_IG) --region=$(DEFAULT_REGION)
 
-create-fw-rule:
+create-fw-rules:
 	# Firewall rules for inbound SSH on network tags
 	gcloud compute --project=$(PROJECT_ID) firewall-rules create open-ssh-by-tag-fwr \
 	--direction=INGRESS --priority=400 --network=$(CUSTOM_VPC_NAME) --action=ALLOW --rules=tcp:22 \
@@ -170,11 +178,11 @@ create-fw-rule:
 	--direction=INGRESS --priority=800 --network=$(CUSTOM_VPC_NAME) --action=ALLOW --rules=icmp --source-service-accounts=$(BACKEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com \
 	--target-service-accounts=$(BACKEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com
 	# Create firewall rule to block all connections from backend
-	gcloud compute --project=$(PROJECT_ID) firewall-rules create block-all-connections-from-backend-fwr --description=block-all-connections-from-backend-fwr \
+	gcloud compute --project=$(PROJECT_ID) firewall-rules create block-all-connections-from-backend-fwr --description="Block all connections from backend" \
 	--direction=INGRESS --priority=1000 --network=$(CUSTOM_VPC_NAME) --action=DENY --rules=all \
 	--source-service-accounts=$(BACKEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com
 	# Create firewall rules for incoming service account from Cloud Shell
-	gcloud compute --project=$(PROJECT_ID) firewall-rules create allow-icmp-incoming-to-frontend-fwr \
+	gcloud compute --project=$(PROJECT_ID) firewall-rules create allow-icmp-incoming-to-frontend-fwr --description="Incoming ICMP to frontend"\
 	--direction=INGRESS --priority=1200 --network=$(CUSTOM_VPC_NAME) --action=ALLOW --rules=icmp --source-ranges=0.0.0.0/0 \
 	--target-service-accounts=$(FRONTEND_SA)@$(PROJECT_ID).iam.gserviceaccount.com
 	# Egress rule to block all outbound traffic
