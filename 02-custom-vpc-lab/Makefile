@@ -1,5 +1,5 @@
 # Populate with your variables
-PROJECT_ID := gcp-challenge-2-net
+PROJECT_ID := gcp-challenge-net-lab-22
 # To retrieve your billing account id, run the command `gcloud alpha billing accounts list` from cloud shell
 ACCOUNT_ID := 0175C8-6FE4A3-D0CC88
 DEFAULT_REGION := us-west1
